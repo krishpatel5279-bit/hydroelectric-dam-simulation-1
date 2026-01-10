@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Hydroelectric Dam Simulation</title>
+<title>Hydroelectric Dam Diagram Simulation</title>
 
 <style>
   body {
@@ -11,61 +11,87 @@
     text-align: center;
   }
 
-  /* Dam */
-  .dam {
+  /* Diagram container */
+  .diagram {
+    width: 600px;
+    height: 350px;
     margin: 20px auto;
-    width: 300px;
-    height: 200px;
-    border: 3px solid #333;
-    background: linear-gradient(to top, #1e90ff 0%, #1e90ff 50%, #ccc 50%);
     position: relative;
+    border: 2px solid #444;
+    background: #f9fcff;
   }
 
-  /* Pipe */
-  .pipe {
+  /* Reservoir */
+  .reservoir {
+    position: absolute;
+    left: 20px;
+    top: 20px;
     width: 200px;
-    height: 30px;
-    margin: 20px auto;
+    height: 200px;
+    border: 3px solid #333;
+    background: linear-gradient(to top, #1e90ff 0%, #1e90ff 60%, #ccc 60%);
+  }
+
+  .label {
+    position: absolute;
+    font-size: 14px;
+    font-weight: bold;
+  }
+
+  /* Penstock (vertical pipe) */
+  .penstock {
+    position: absolute;
+    left: 220px;
+    top: 80px;
+    width: 30px;
+    height: 180px;
     border: 3px solid #333;
     background: #ddd;
     overflow: hidden;
-    position: relative;
   }
 
-  /* Water animation inside pipe */
-  .water {
-    width: 300%;
-    height: 100%;
+  .water-vertical {
+    width: 100%;
+    height: 300%;
     background: repeating-linear-gradient(
-      90deg,
+      180deg,
       #1e90ff 0%,
       #1e90ff 10%,
       #87cefa 10%,
       #87cefa 20%
     );
     position: absolute;
-    left: 0;
     top: 0;
-    animation: flow 2s linear infinite;
+    animation: flowDown 2s linear infinite;
   }
 
-  @keyframes flow {
-    from { transform: translateX(0); }
-    to { transform: translateX(-200px); }
+  @keyframes flowDown {
+    from { transform: translateY(0); }
+    to { transform: translateY(-120px); }
   }
 
-  /* Turbine */
+  /* Turbine chamber */
+  .turbine-box {
+    position: absolute;
+    left: 260px;
+    top: 200px;
+    width: 100px;
+    height: 100px;
+    border: 3px solid #333;
+    background: #eee;
+  }
+
   .turbine {
-    margin: 20px auto;
     width: 60px;
     height: 60px;
     border: 4px solid black;
     border-radius: 50%;
-    position: relative;
+    position: absolute;
+    top: 20px;
+    left: 20px;
     animation: spin 0s linear infinite;
   }
 
-  /* Turbine blades */
   .turbine::before,
   .turbine::after {
     content: "";
@@ -87,8 +113,39 @@
     to { transform: rotate(360deg); }
   }
 
+  /* Tailrace (exit pipe) */
+  .tailrace {
+    position: absolute;
+    left: 360px;
+    top: 230px;
+    width: 180px;
+    height: 30px;
+    border: 3px solid #333;
+    background: #ddd;
+    overflow: hidden;
+  }
+
+  .water-horizontal {
+    width: 300%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      90deg,
+      #1e90ff 0%,
+      #1e90ff 10%,
+      #87cefa 10%,
+      #87cefa 20%
+    );
+    animation: flowRight 2s linear infinite;
+  }
+
+  @keyframes flowRight {
+    from { transform: translateX(0); }
+    to { transform: translateX(-180px); }
+  }
+
+  /* Controls */
   .controls {
-    margin: 20px;
+    margin-top: 20px;
   }
 
   .output {
@@ -100,17 +157,29 @@
 
 <body>
 
-<h1>Hydroelectric Dam Simulation</h1>
+<h1>Hydroelectric Dam – Physical Diagram Simulation</h1>
 
-<div class="dam">
-  <p style="position:absolute; bottom:10px; left:10px;">Reservoir</p>
+<div class="diagram">
+
+  <div class="reservoir"></div>
+  <div class="label" style="left:40px; top:230px;">Reservoir</div>
+
+  <div class="penstock">
+    <div class="water-vertical" id="waterDown"></div>
+  </div>
+  <div class="label" style="left:215px; top:60px;">Penstock</div>
+
+  <div class="turbine-box">
+    <div class="turbine" id="turbine"></div>
+  </div>
+  <div class="label" style="left:270px; top:310px;">Turbine</div>
+
+  <div class="tailrace">
+    <div class="water-horizontal" id="waterOut"></div>
+  </div>
+  <div class="label" style="left:400px; top:265px;">Outflow</div>
+
 </div>
-
-<div class="pipe">
-  <div class="water" id="water"></div>
-</div>
-
-<div class="turbine" id="turbine"></div>
 
 <div class="controls">
   <label>Water Height:</label><br>
@@ -129,7 +198,8 @@
   const heightSlider = document.getElementById("height");
   const flowSlider = document.getElementById("flow");
   const turbine = document.getElementById("turbine");
-  const water = document.getElementById("water");
+  const waterDown = document.getElementById("waterDown");
+  const waterOut = document.getElementById("waterOut");
   const speedText = document.getElementById("speed");
   const powerText = document.getElementById("power");
 
@@ -140,11 +210,9 @@
     const speed = height * flow;
     const power = speed * 2;
 
-    // Turbine spin speed
     turbine.style.animationDuration = (20 / speed) + "s";
-
-    // Water flow speed
-    water.style.animationDuration = (10 / flow) + "s";
+    waterDown.style.animationDuration = (10 / flow) + "s";
+    waterOut.style.animationDuration = (10 / flow) + "s";
 
     speedText.textContent = speed;
     powerText.textContent = power;
