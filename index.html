@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Hydroelectric Dam – Cross Section Diagram</title>
+<title>Hydroelectric Dam Simulation</title>
 
 <style>
   body {
@@ -60,6 +60,7 @@
     background: #ccc;
     border: 2px solid #333;
     overflow: hidden;
+    animation: flowRight 2s linear infinite;
   }
 
   .water-flow {
@@ -75,9 +76,9 @@
     animation: flow 2s linear infinite;
   }
 
-  @keyframes flow {
-    from { transform: translateX(0); }
-    to { transform: translateX(-300px); }
+  @keyframes flowRight {
+    from { transform: translateX(-300px); }
+    to { transform: translateX(0); }
   }
 
   /* Turbine chamber */
@@ -152,6 +153,7 @@
     width: 180px;
     height: 25px;
     background: #1e90ff;
+    animation: flowRight 2s linear infinite;
   }
 
   /* River */
