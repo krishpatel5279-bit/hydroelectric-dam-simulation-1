@@ -1,15 +1,17 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>Hydroelectric Dam Simulation</title>
+
 <style>
   body {
     font-family: Arial, sans-serif;
     background: #eef6ff;
     text-align: center;
   }
+
+  /* Dam */
   .dam {
     margin: 20px auto;
     width: 300px;
@@ -18,21 +20,77 @@
     background: linear-gradient(to top, #1e90ff 0%, #1e90ff 50%, #ccc 50%);
     position: relative;
   }
+
+  /* Pipe */
+  .pipe {
+    width: 200px;
+    height: 30px;
+    margin: 20px auto;
+    border: 3px solid #333;
+    background: #ddd;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Water animation inside pipe */
+  .water {
+    width: 300%;
+    height: 100%;
+    background: repeating-linear-gradient(
+      90deg,
+      #1e90ff 0%,
+      #1e90ff 10%,
+      #87cefa 10%,
+      #87cefa 20%
+    );
+    position: absolute;
+    left: 0;
+    top: 0;
+    animation: flow 2s linear infinite;
+  }
+
+  @keyframes flow {
+    from { transform: translateX(0); }
+    to { transform: translateX(-200px); }
+  }
+
+  /* Turbine */
   .turbine {
     margin: 20px auto;
     width: 60px;
     height: 60px;
     border: 4px solid black;
     border-radius: 50%;
+    position: relative;
     animation: spin 0s linear infinite;
   }
+
+  /* Turbine blades */
+  .turbine::before,
+  .turbine::after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background: black;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+  }
+
+  .turbine::after {
+    transform: translateY(-50%) rotate(90deg);
+  }
+
   @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
+
   .controls {
     margin: 20px;
   }
+
   .output {
     font-size: 18px;
     margin-top: 10px;
@@ -46,6 +104,10 @@
 
 <div class="dam">
   <p style="position:absolute; bottom:10px; left:10px;">Reservoir</p>
+</div>
+
+<div class="pipe">
+  <div class="water" id="water"></div>
 </div>
 
 <div class="turbine" id="turbine"></div>
@@ -67,17 +129,23 @@
   const heightSlider = document.getElementById("height");
   const flowSlider = document.getElementById("flow");
   const turbine = document.getElementById("turbine");
+  const water = document.getElementById("water");
   const speedText = document.getElementById("speed");
   const powerText = document.getElementById("power");
 
   function updateSimulation() {
-    const height = heightSlider.value;
-    const flow = flowSlider.value;
+    const height = Number(heightSlider.value);
+    const flow = Number(flowSlider.value);
 
     const speed = height * flow;
     const power = speed * 2;
 
+    // Turbine spin speed
     turbine.style.animationDuration = (20 / speed) + "s";
+
+    // Water flow speed
+    water.style.animationDuration = (10 / flow) + "s";
+
     speedText.textContent = speed;
     powerText.textContent = power;
   }
